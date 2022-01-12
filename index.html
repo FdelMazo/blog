@@ -3,27 +3,39 @@
   <meta charset="utf-8" />
   <title>Why don't I have a blog? · fede.dm</title>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
   <h1>Why don't I have a blog?</h1>
   <header>
     <aside>January X, 2022</aside>
-    <a href="https://fede.dm/" rel="author">Federico del Mazo</a>
+    <a href="https://fede.dm/" target="_blank" rel="author">Federico del Mazo</a>
   </header>
+
+
+
+  <hr />
+  <hr />
+  <hr />
+
+  <div id="gh-comments-list">
+  </div>
 
   <footer>
     <aside>January X, 2022</aside>
-    <a href="https://fede.dm/" rel="author">Federico del Mazo</a>
+    <a href="https://fede.dm/" rel="author" target="_blank">Federico del Mazo</a>
 
     <p class="credits">
       Assets stolen from:
-      <a href="https://bost.ocks.org/mike/shuffle/">Fisher-Yates Shuffle</a>
+      <a href="https://bost.ocks.org/mike/shuffle/" target="_blank">Fisher-Yates Shuffle</a>
       (font and general style),
-      <a href="https://nipponcolors.com/">Nippon Colors</a>
+      <a href="https://nipponcolors.com/" target="_blank">Nippon Colors</a>
       (background texture and font colors),
-      <a
-        href="https://ianbicking.org/blog/2020/11/firefox-was-always-enough.html/"
-        >Firefox Was Always Enough</a
-      >
-      (background color).
+      <a href="https://ianbicking.org/blog/2020/11/firefox-was-always-enough.html/" target="_blank">Firefox Was Always
+        Enough</a>
+      (background color),
+      <a href="http://donw.io/post/github-comments/" target="_blank">Replacing Disqus with Github Comments
+      </a> (comment section implementation).
     </p>
   </footer>
 
@@ -32,7 +44,7 @@
       background-color: #f0ecdc;
       background-image: url("./texture.png");
       color: #252321;
-      margin: 1em 6em 4em 6em;
+      margin-left: 6em;
       font-family: "PT Sans", sans-serif;
       width: 960px;
     }
@@ -44,6 +56,7 @@
       color: #181b26;
     }
 
+    hr,
     header,
     footer {
       color: #4d646c;
@@ -51,7 +64,7 @@
 
     .lead {
       text-indent: 2ch;
-      color: #4d646c;
+      color: #455859;
     }
 
     h1 {
@@ -86,20 +99,36 @@
     }
 
     footer {
-      margin-top: 8em;
+      margin-top: 4em;
     }
 
-    body > p {
+    h1~aside {
+      font-size: small;
+      float: right;
+      width: 180px;
+    }
+
+    h1~aside>p {
+      margin: 0px;
+    }
+
+    body>p {
       line-height: 1.5em;
       width: 720px;
     }
 
+    sup {
+      font-size: small;
+      font-weight: 520;
+      color: #FF4E20;
+    }
+
     a {
-      color: steelblue;
+      color: #48929B;
     }
 
     a:visited {
-      color: darkmagenta;
+      color: #F47983;
     }
 
     a:not(:hover) {
@@ -109,5 +138,87 @@
     .credits {
       font-size: small;
     }
+
+    .commentbtn {
+      margin: 0.5em 0;
+    }
+
+    svg {
+      width: 1.5em;
+      height: 1.5em;
+    }
+
+    button {
+      margin: 1em;
+      font-size: medium;
+      font-weight: bold;
+    }
+
+    #gh-comment-hr {
+      border-top: inset 1px white;
+      margin: 8px 0px;
+    }
+
+    #gh-comment {
+      border: 1px solid #455859;
+      margin: 0.5em 0;
+      padding: 10px;
+    }
+
+    #gh-comment-header img {
+      margin-right: 10px;
+    }
+
+    #gh-comment-header {
+      display: flex;
+      align-items: center;
+    }
   </style>
+
+  <script>
+    const url = "https://github.com/FdelMazo/blog/issues/1/#new_comment_field"
+    const api_url = "https://api.github.com/repos/FdelMazo/blog/issues/1/comments"
+
+    const html_button = `
+      <a href='${url}' target="_blank">
+        <button>
+          <svg viewBox="0 0 16 16">
+            <path fill="currentcolor"
+              d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z">
+            </path>
+          </svg>
+          <br />
+          New Comment
+        </button>
+      </a>
+    `
+
+    $(document).ready(function () {
+      $.ajax(api_url, {
+        headers: { Accept: "application/vnd.github.v3.html+json" },
+        dataType: "json",
+        success: function (comments) {
+          $("#gh-comments-list").append(html_button);
+          $.each(comments, function (i, comment) {
+            const date = new Date(comment.created_at);
+            const html_comment = `
+              <div id='gh-comment'>
+                <div id='gh-comment-header'>
+                  <a href='${comment.user.html_url}' target="_blank"><img src='${comment.user.avatar_url}' width='24px'></a>
+                  <b><a href='${comment.user.html_url}' target="_blank">${comment.user.login}</a></b>
+                  &nbsp;posted at&nbsp;<em>${date.toUTCString()}</em>
+                </div>
+                <div id='gh-comment-hr'></div>
+                ${comment.body_html}
+              </div>
+            `
+
+            $("#gh-comments-list").append(html_comment);
+          });
+        },
+      });
+    });
+
+  </script>
+
 </html>
